@@ -45,4 +45,17 @@ Operating System features are accessed through **system calls**, such as calling
 When calling the Linux kernel, the operating system usually needs more information. For example, when dealing with files, the operating system needs to know which file you are dealing with, what data you want to write, and other details. This informations called **parameters** which are also stored in register. Let's take a look at our first program again, when the **exit** system call is invoked, the operating system requires a **status code** be loaded in %ebx register, this is done by the instruction `movl $0, %ebx`. We can access the number 0 after running the program by typing `echo $?`. You may ask why is `0` loaded in `%ebx`? How about `1` or `99` or whatever you want? While, in Linux or other operating systems that modeled after Unix, every program when it exits gives the operating system an exit status code. If everything was OK, it returns `0`, otherwise to indicate failure or other errors, warnings, or statuses. The programmer determines what each number means. You may as well change the number and watch it come out.
 
 Finally, let's talk about this instruction `int $0x80`at the end of the file. What is it means? The `int` stands for *interrupt*, and `0x80`is the interrupt number to use. When we signalling the interrupt, the system cal(exit) will be performed.
- 
+
+## Data Accessing Methods
+
+Before you learn all the types of addressing modes in assembly language, there's a general form of memory address references you should keep in mind:
+
+    ADDRESS_OR_OFFSET(%BASE_OR_OFFSET, %INDEX, MULTIPLIER)
+
+Then calculate the address:
+
+    ADDRESS = ADDRESS_OR_OFFSET + %BASE_OR_OFFSET + MULTIPILER * %INDEX
+
+Note that all of the fields are **optional**, and if any of the pieces is left out, it is just substituted with `0` in the equation.
+
+All of the data accessing methods except immediate-mode can be represented in this fashion.
