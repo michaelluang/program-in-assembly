@@ -59,3 +59,31 @@ Then calculate the address:
 Note that all of the fields are **optional**, and if any of the pieces is left out, it is just substituted with `0` in the equation.
 
 All of the data accessing methods except immediate-mode can be represented in this fashion.
+
+## Procedures
+
+Here are some notes from *Computer System: A Programmer's Perspective*
+
+### What is Procedure Calls?
+
+A procedure call involves passing both data(in the form of procedure parameters and return values) and control from one part of a program to another. In addition, it must allocate space for the local variables of the procefure on entry and deallocate them on exit.
+
+### Stack Frame Structure
+
+The machine use the **stack** to pass procedure arguments, to store return information, to save registers for late restoration, and for local storage.
+
+The topmost stack frame is delimited by two pointers, with register **%ebp** serving as the **frame pointer**, and **%esp** serving as the **stack pointer**.
+
+The stack discipline provides a mechanism where an invocation of a function has its own *private* storage for state information(save values for the return location, frame pointer and callee-save registers).
+
+Therefore, the **stack** is an important component of **procedure calls**.
+
+### Transferring Control
+
+It is important for all procedures to follow a *consistent* set of conventions for setting up and restoring the stack in order for the program to execute properly.
+
+The **call** and **ret** instructions do the job of transferring control.
+
+The effect of a **call** instruction is to push the a return address on the stack and jump to the start of the called procedure. The **return address** is the address of the instruction immediately following the **call** in the program.
+
+The **ret** instruciton pops an address off the stack and jumps to this location(i.e. the instruciton that follows **call**). 
