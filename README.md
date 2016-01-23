@@ -87,3 +87,11 @@ The **call** and **ret** instructions do the job of transferring control.
 The effect of a **call** instruction is to push the a return address on the stack and jump to the start of the called procedure. The **return address** is the address of the instruction immediately following the **call** in the program.
 
 The **ret** instruciton pops an address off the stack and jumps to this location(i.e. the instruciton that follows **call**). 
+
+#### Exercise
+
+      call next
+    next:
+      popl %eax
+
+There is no maching `ret` instruction to this call, what purpose does this code fragment serve?
