@@ -99,40 +99,58 @@ end_loop:
  movl $0, %ebx
  int $LINUX_SYSCALL
 
-.equ LOWERCASE_A, 'a'
-.equ LOWERCASE_Z, 'z'
+# PURPOSE:   Convert to upper case for a block of memory
+#
+# INPUT:     The first parameter: the location of the block memory
+#            The second parameter: the length of the buffer
+#
+# OUTPUT:    Overwrite the current buffer with upper-casified version
+#
+# VARIABLES: %eax: beginning of the buffer
+#            %ebx: length of the buffer
+#            %edi: current buffer offset
+#            %cl:  current byte examined
 
-.equ UPPER_CONVERSION, 'A' - 'a'
+###### CONSTANTS ######
 
-.equ ST_BUFFER_LEN, 8
-.equ ST_BUFFER, 12
+.equ LOWERCASE_A, 'a'            # the lower boundary of the search
+.equ LOWERCASE_Z, 'z'            # the upper boundary of the search
+
+.equ UPPER_CONVERSION, 'A' - 'a' # convert constant between upper and lower case
+
+.equ ST_BUFFER_LEN, 8            # the length of buffer
+.equ ST_BUFFER, 12               # the location of buffer
 
 convert_to_upper:
  pushl %ebp
  movl %esp, %ebp
 
+# set up variables
  movl ST_BUFFER(%ebp), %eax
  movl ST_BUFFER_LEN(%ebp), %ebx
  movl $0, %edi
 
- cmpl $0, %ebx
- je end_convert_loop
+ cmpl $0, %ebx                   # if the length of buffer is 0
+ je end_convert_loop             # nothing to convert, just leave
 
 convert_loop:
- movb (%eax, %edi, 1), %cl
+ movb (%eax, %edi, 1), %cl       # get the curretn byte
 
+# if the byte is not between 'a' and 'z', get the next byte
  cmpb $LOWERCASE_A, %cl
  jl next_byte
  cmpb $LOWERCASE_Z, %cl
  jg next_byte
 
+# otherwise, convert to upper case
  addb $UPPER_CONVERSION, %cl
  movb %cl, (%eax, %edi, 1)
 
+# get the next byte
 next_byte:
  incl %edi
- cmpl %edi, %ebx
- jne convert_loop
+ cmpl %edi, %ebx                 # if we didn't reach the end of buffer
+ jne convert_loop                # continue
 
 end_convert_loop:
  movl %ebp, %esp
