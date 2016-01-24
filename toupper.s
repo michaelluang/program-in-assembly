@@ -1,8 +1,20 @@
 .code32
+# PURPOSE: The program converts the input file to an output file
+#          with all letters converted to upper case.
+#
+# INTPUT:  - the input file to be converted
+#          - the output file
+#
+#          run this program, do the following commands:
+#
+#          ./toupper input_file_name output_file_name
+#
+#          you should specify the file full names when 
+#          running the program.
+        
 .include "linux.s"
 
 .section .data
-
 
 # options for **open**
 .equ O_RDONLY, 0
@@ -29,17 +41,20 @@
 .equ ST_FD_IN, -4
 .equ ST_FD_OUT, -8
 
-.equ ST_AGRC, 0
-.equ ST_ARGV_0, 4
-.equ ST_ARGV_1, 8
-.equ ST_ARGV_2, 12
+.equ ST_AGRC, 0                  # number of arguments
+.equ ST_ARGV_0, 4                # name of the program
+.equ ST_ARGV_1, 8                # name of the input file
+.equ ST_ARGV_2, 12               # name of the output file
 
 .globl _start
 _start:
  movl %esp, %ebp
 
- subl $ST_SIZE_RESERVE, %esp
+ subl $ST_SIZE_RESERVE, %esp     # allocate space for file(i.e.
+                                 # the input and output file)
+                                 # descriptots
 
+# open input file
 open_files:
 open_fd_in:
  movl $SYS_OPEN, %eax
@@ -48,9 +63,11 @@ open_fd_in:
  movl $0666, %edx
  int $LINUX_SYSCALL
 
+# save the input file descriptor
 store_fd_in:
  movl %eax, ST_FD_IN(%ebp)
 
+# open the output file
 open_fd_out:
  movl $SYS_OPEN, %eax
  movl ST_ARGV_2(%ebp), %ebx
@@ -58,9 +75,12 @@ open_fd_out:
  movl $0666,%edx
  int $LINUX_SYSCALL
 
+# save the output file descriptor
 store_fd_out:
  movl %eax, ST_FD_OUT(%ebp)
 
+## BEGIN MAIN LOOP ##
+# read in a block from the input file
 read_loop_begin:
  movl $SYS_READ, %eax
  movl ST_FD_IN(%ebp), %ebx
@@ -68,24 +88,27 @@ read_loop_begin:
  movl $BUFFER_SIZE, %edx
  int $LINUX_SYSCALL
 
- cmpl $END_OF_FILE, %eax
- jle end_loop
+ cmpl $END_OF_FILE, %eax         # check for if we reach the end
+ jle end_loop                    # if found, the go to end.
 
+# convert the block to upper case
 continue_read_loop:
- pushl $BUFFER_DATA
- pushl %eax
- call convert_to_upper
- popl %eax
+ pushl $BUFFER_DATA              # location of buffer
+ pushl %eax                      # size of buffer
+ call convert_to_upper           # CONVERT!!!
+ popl %eax                       # free up the space
  addl $4, %esp
 
+# write the block to the output file
  movl %eax, %edx
  movl $SYS_WRITE, %eax
  movl ST_FD_OUT(%ebp), %ebx
  movl $BUFFER_DATA, %ecx
  int $LINUX_SYSCALL
 
- jmp read_loop_begin
+ jmp read_loop_begin             # read next block
 
+# close the files and exit
 end_loop:
  movl $SYS_CLOSE, %eax
  movl ST_FD_OUT(%ebp), %ebx
@@ -156,4 +179,3 @@ end_convert_loop:
  movl %ebp, %esp
  popl %ebp
  ret
- 
