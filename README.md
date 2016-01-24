@@ -95,3 +95,20 @@ The **ret** instruciton pops an address off the stack and jumps to this location
       popl %eax
 
 There is no maching `ret` instruction to this call, what purpose does this code fragment serve?
+
+## Buffers
+
+A **buffer** is a continuous block of bytes used for bulk data transfer.
+
+When you request to read a file, the operating system needs to have a place to store the data it reads. The place is called a **Buffer**.  
+
+### .bss Section
+
+Unlike .data section which you can reserve storage and set it to an initial value, the .bss section doesn't take up space in the executable(but it still reserves storage), and you can't set an initial value for it(because we don't need to initialize it anyway, we just want to reserve storage).
+
+How to create a buffer? Do the following commands:
+
+    .section .bss
+    .lcomm my_buffer, 500
+
+The `.lcomm` directive used for creating a buffer, and `my_buffer` refers to a 500-byte storage location.
