@@ -35,6 +35,26 @@ _start:
 # save input file descriptor
  movl %eax, ST_INPUT_DESCRIPTOR(%ebp)
 
+###### ERROR CHECKING AND HANDLING ######
+# if you want to see what happens when an error occurs,
+# try to change the input_file_name in line 10 of this file
+ cmpl $0, %eax
+ jg continue_processing # if %eax is not negative, jump out this section
+
+# error message and error code
+ .section .data
+no_open_file_code:
+ .ascii "0001: \0"
+no_open_file_msg:
+ .ascii "Can't Find Open File\0"
+
+ .section .text
+ pushl $no_open_file_msg
+ pushl $no_open_file_code
+ call error_exit
+###### ERROR CHECKING AND HANDLING END ######
+
+continue_processing:
 # open the output file
  movl $SYS_OPEN, %eax
  movl $output_file_name, %ebx
