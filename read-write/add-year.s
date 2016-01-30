@@ -3,7 +3,7 @@
 # PURPOSE: This program increments the age item by 1 in each record
 
  .include "record-def.s"
- .include "linux.s"
+ .include "../linux.s"
 
  .section .data
 input_file_name:

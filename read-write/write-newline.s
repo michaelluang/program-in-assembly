@@ -2,7 +2,7 @@
 
 # PURPOSE: Print out a new line to the STDOUT
 
- .include "linux.s"
+ .include "../linux.s"
 
  .type write_newline, @function
  .globl write_newline

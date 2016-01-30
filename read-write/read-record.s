@@ -1,7 +1,7 @@
  .code32
 
  .include "record-def.s"
- .include "linux.s"
+ .include "../linux.s"
 
 # PURPOSE: This function reads a record from a file descriptor
 #

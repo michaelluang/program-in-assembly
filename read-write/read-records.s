@@ -3,7 +3,7 @@
 # PURPOSE: Read every record of the `great-programmers.dat` file
 #          and print out the first name of each record.
 
-.include "linux.s"
+.include "../linux.s"
 .include "record-def.s"
 
  .section .data
