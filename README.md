@@ -72,6 +72,8 @@ A procedure call involves passing both data(in the form of procedure parameters 
 
 The machine use the **stack** to pass procedure arguments, to store return information, to save registers for late restoration, and for local storage.
 
+Linux starts the stack from location 0xbfffffff and grows it downwards.
+
 The topmost stack frame is delimited by two pointers, with register **%ebp** serving as the **frame pointer**, and **%esp** serving as the **stack pointer**.
 
 The stack discipline provides a mechanism where an invocation of a function has its own *private* storage for state information(save values for the return location, frame pointer and callee-save registers).
@@ -112,3 +114,16 @@ How to create a buffer? Do the following commands:
     .lcomm my_buffer, 500
 
 The `.lcomm` directive used for creating a buffer, and `my_buffer` refers to a 500-byte storage location.
+
+## The Memory Layout of a Linux Program
+
+0xbfffffff
+| Environment Variables |
+| ... |
+| Arguments #1 |
+| Arguments #2 |
+| Program Name |
+| Number of Arguments |
+| Unmapped Memory |
+| Program Code and Data |
+0x08048000
