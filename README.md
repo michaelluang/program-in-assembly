@@ -127,3 +127,5 @@ The `.lcomm` directive used for creating a buffer, and `my_buffer` refers to a 5
 | Number of Arguments   |                                           |
 | Unmapped Memory       |                                           |
 | Program Code and Data | :point_left: Memory Address: `0x08048000` |
+
+Note that the memory in the unmapped memory is inaccessible. The resaon is that this region of virtual memory addresses hasn't been mapped onto physical memory addresses.
