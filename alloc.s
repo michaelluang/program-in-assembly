@@ -56,4 +56,33 @@ allocate_init:
 
 ##### FUNCTION: allocate #####
 
-# PURPOSE: 
+# PURPOSE: grab a section of memory. It checks to see if there
+#          are any free blocks, if not, it asks Linux for a new one.
+#
+# PARAMETERS: the size of the memory block we want to allocate.
+#
+# RETURN VALUE: return the address of the allocated memory in %eax.
+#               if there is no memory available, it will return 0 in %eax.
+#
+# VARIABLES USED: %ecx - the size of the request memory
+#                 %eax - current memory region being examined
+#                 %ebx - current break position
+#                 %edx - size of the current memory region
+#
+
+ .globl allocate
+ .type allocate, @function
+ .equ ST_MEM_SIZE, 8
+
+allocate:
+ pushl %ebp
+ movl %esp, %ebp
+
+# load the parameters
+ movl ST_MEM_SIZE(%ebp), %ecx
+ movl heap_begin, %eax
+ movl current_break, %ebx
+
+alloc_loop_begin:
+ 
+ 
