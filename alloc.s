@@ -84,5 +84,88 @@ allocate:
  movl current_break, %ebx
 
 alloc_loop_begin:
+ cmpl %ebx, %eax
+ je move_break
+
+ movl HDR_SIZE_OFFSET(%eax), %edx # grab the size of this memory
+ cmpl $UNAVAILABLE, HDR_AVAIL_OFFSET(%eax)
+ je next_location
  
+ cmpl %edx, %ecx # compare the memory size
+ jle allocate_here # if the size is enough, allocate here
+
+next_location:
+# let's %eax point to next memory location
+ addl $HEADER_SIZE, %eax
+ addl %edx, %eax
+ jmp alloc_loop_begin
+
+allocate_here:
+ movl $UNAVAILABLE, HDR_AVAIL_OFFSET(%eax)
+ addl $HEADER_SIZE, %eax
+
+# return from the function
+ movl %ebp, %esp
+ popl %ebp
+ ret
+
+# ask Linux for more memory
+move_break:
+# prepare for brk system call
+ addl $HEADER_SIZE, %ebx
+ addl %ecx, %ebx
+
+ pushl %eax
+ pushl %ecx
+ pushl %ebx
+
+ movl $SYS_BRK, %eax
+ int %LINUX_SYSCALL
+
+# check the result
+ cmpl $0, %eax # 0 for failing
+ jmp error
+
+ popl %ebx
+ popl %ecx
+ popl %eax
+
+# setup the memory
+ movl $UNAVAILABLE, HDR_AVAIL_OFFSET(%eax)
+ movl %ecx, HDR_SIZE_OFFSET(%eax)
+ addl $HEADER_SIZE, %eax
+ movl %ebx, current_break
+
+ movl %ebp, %esp
+ popl %ebp
+ ret
+
+error:
+ movl $0, %eax
+ movl %ebp, %esp
+ popl %ebp
+ ret
+
+###### END OF FUNCTION ######
+
+###### FUNCTION: deallocate ######
+
+# PURPOSR: the purpose of this function is to give back the 
+#          memory region to the pool after we're done using it.
+#
+# PARAMETERS: the address of the memory we want to return to the
+#             memory pool.
+#
+ .globl deallocate
+ .type deallocate, @function
+ .equ ST_MEMORY_SEG, 4 # stack position of the memory region to free
+deallocate:
+# there is not standard function stuff here
+ movl ST_MEMORY_SEG(%esp), %eax
+ subl $4, %eax
+ movl $AVAILABLE, HDR_AVAIL_OFFSET(%eax)
+# return
+ ret
+
+###### END OF FUNCTION ######
  
