@@ -40,10 +40,10 @@ allocate_init:
  movl %esp, %ebp
 
  movl $SYS_BRK, %eax # if the brk system call is called with 0
- movl $0, %ebx # in %ebx, it returns the last valid usable address
+ movl $0, %ebx       # in %ebx, it returns the last valid usable address
  int $LINUX_SYSCALL
 
- incl %eax # we want the memory location after that
+ incl %eax           # we want the memory location after that
 
  movl %eax, current_break
  movl %eax, heap_begin
@@ -87,12 +87,12 @@ alloc_loop_begin:
  cmpl %ebx, %eax
  je move_break
 
- movl HDR_SIZE_OFFSET(%eax), %edx # grab the size of this memory
+ movl HDR_SIZE_OFFSET(%eax), %edx          # grab the size of this memory
  cmpl $UNAVAILABLE, HDR_AVAIL_OFFSET(%eax)
  je next_location
  
- cmpl %edx, %ecx # compare the memory size
- jle allocate_here # if the size is enough, allocate here
+ cmpl %edx, %ecx                           # compare the memory size
+ jle allocate_here                         # if the size is enough, allocate here
 
 next_location:
 # let's %eax point to next memory location
