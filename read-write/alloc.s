@@ -1,3 +1,4 @@
+ .code32
 # PURPOSE: Program to manage memory usage - allocates
 #          deallocates memory as requested
 
@@ -120,7 +121,7 @@ move_break:
  pushl %ebx
 
  movl $SYS_BRK, %eax
- int %LINUX_SYSCALL
+ int $LINUX_SYSCALL
 
 # check the result
  cmpl $0, %eax # 0 for failing
@@ -162,7 +163,7 @@ error:
 deallocate:
 # there is not standard function stuff here
  movl ST_MEMORY_SEG(%esp), %eax
- subl $4, %eax
+ subl $HEADER_SIZE, %eax
  movl $AVAILABLE, HDR_AVAIL_OFFSET(%eax)
 # return
  ret
